@@ -13,8 +13,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    androidstring.cpp \
+    androidstringreader.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    androidstring.h \
+    androidstringreader.h
 
 FORMS    += mainwindow.ui
