@@ -21,13 +21,10 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_deviceButton_clicked();
-
     void on_parseButton_clicked();
-
     void on_sourceButton_clicked();
-
     void on_excludeButton_clicked();
+    void on_overlayButton_clicked();
 
 private:
     Ui::MainWindow *ui;

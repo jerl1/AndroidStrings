@@ -204,6 +204,8 @@ void AndroidStringModel::setupModelData(QList<AndroidString*> &list, AndroidStri
                 parentPathItem->appendChild(childItem);
                 parentLabelItem = childItem;
             } else {
+                if (parentLabelItem == NULL)
+                    parentLabelItem = parentPathItem;
                 childItem = new AndroidStringItem(androidString, parentLabelItem);
                 parentLabelItem->appendChild(childItem);
             }

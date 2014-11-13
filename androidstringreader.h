@@ -15,10 +15,15 @@ private:
     bool readString(AndroidString &str);
     bool readStringArray(AndroidString &str);
     bool readQuantity(AndroidString &str);
+    bool readEndToken(AndroidString &str, QString endToken);
 
     QList<AndroidString*> *mList;
     QString mPath;
     QString mLanguage;
+
+    static const QString xml_string;
+    static const QString xml_string_array;
+    static const QString xml_plurals;
 };
 
 #endif // ANDROIDSTRINGREADER_H

@@ -72,20 +72,19 @@ void MainWindow::on_excludeButton_clicked()
     selectDirectory(ui->excludeLine);
 }
 
-void MainWindow::on_deviceButton_clicked()
+void MainWindow::on_overlayButton_clicked()
 {
-    selectDirectory(ui->deviceLine);
+    selectDirectory(ui->overlayLine);
 }
 
 void MainWindow::on_parseButton_clicked()
 {
-    //Free list
     while (!mList.isEmpty())
         delete mList.takeFirst();
 
     QString excludePath = ui->excludeLine->text();
     if (excludePath.size() == 0)
-        excludePath = "----";
+        excludePath = ";"; //Somethings not empty, else everythings will be excluded
 
     //Look for all xml files
     QDirIterator *sourcesIterator = newDirIterator(ui->sourceLine);
@@ -114,5 +113,3 @@ void MainWindow::on_parseButton_clicked()
 
     updateTreeWidget();
 }
-
-

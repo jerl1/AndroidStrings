@@ -1,5 +1,11 @@
 #include "androidstringreader.h"
 
+#include <QXmlStreamAttributes>
+
+const QString AndroidStringReader::xml_string("string");
+const QString AndroidStringReader::xml_string_array("string-array");
+const QString AndroidStringReader::xml_plurals("plurals");
+
 AndroidStringReader::AndroidStringReader(QList<AndroidString*> *list, const QString &path)
 {
     static const QString strValues("values");
@@ -37,18 +43,18 @@ bool AndroidStringReader::readFile(QIODevice *device)
         }
 
         if(token == QXmlStreamReader::StartElement) {
-            if(name() == "ressources") {
+            if(name() == "ressources")
                 continue;
-            }
+
             bool add = false;
             AndroidString str;
             str.setAndroidLabel(attributes().value("name").toString());
 
-            if (name() == "string") {
+            if (name() == xml_string) {
                 add = readString(str);
-            } else if (name() == "string-array") {
+            } else if (name() == xml_string_array) {
                 add = readStringArray(str);
-            } else if (name() == "plurals") {
+            } else if (name() == xml_plurals) {
                 add = readQuantity(str);
             }
 
@@ -67,29 +73,64 @@ bool AndroidStringReader::readFile(QIODevice *device)
 bool AndroidStringReader::readString(AndroidString &str)
 {
     str.setType(AndroidString::TypeString);
-    str.appendTranslation(readElementText());
-    return true;
+    return readEndToken(str, xml_string);
 }
 
 bool AndroidStringReader::readStringArray(AndroidString &str)
 {
     str.setType(AndroidString::TypeArray);
-    while (!atEnd() && !hasError()) {
-        QXmlStreamReader::TokenType token = readNext();
-        if(token == QXmlStreamReader::StartElement) {
-            str.appendTranslation(readElementText());
-        } else if(token == QXmlStreamReader::EndElement) {
-            break;
-        }
-    }
-
-    return true;
+    return readEndToken(str, xml_string_array);
 }
 
 bool AndroidStringReader::readQuantity(AndroidString &str)
 {
-    //TODO
     str.setType(AndroidString::TypeQuantity);
-    qDebug(qPrintable("Skipping quantity"));
-    return false;
+    return readEndToken(str, xml_plurals);
+}
+
+bool AndroidStringReader::readEndToken(AndroidString &str, QString endToken)
+{
+    QString item;
+    while (!atEnd() && !hasError()) {
+        QXmlStreamReader::TokenType token = readNext();
+        switch (token) {
+            case QXmlStreamReader::Characters:
+                if (isWhitespace() == false)
+                    item.append(text().string());
+                break;
+
+            case QXmlStreamReader::StartElement:
+                if (endToken == xml_plurals) {
+                    QString quantity = attributes().value("quantity").toString();
+                    if (quantity.size() > 0)
+                        item += quantity + ": ";
+                }
+                if (name() == "g") {
+                    //This is a xliff:g
+                    item += readElementText();
+                }
+
+                break;
+
+            case QXmlStreamReader::EndElement:
+                if (name() == endToken) {
+                    if (item.size() > 0) {
+                        str.appendTranslation(item);
+                    }
+                    return true;
+                } else {
+                    str.appendTranslation(item);
+                    item.clear();
+                }
+                break;
+
+            case QXmlStreamReader::Invalid:
+                qDebug(qPrintable(errorString()));
+                return false;
+            default:
+                break;
+        }
+    }
+
+    return !hasError();
 }

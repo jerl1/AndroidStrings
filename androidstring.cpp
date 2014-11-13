@@ -66,7 +66,10 @@ void AndroidString::appendTranslation(const QString &translation)
 QString AndroidString::formatedTranslation() const
 {
     if (mType == TypeString) {
-        return mTranslation.at(0);
+        if (mTranslation.size() > 0)
+            return mTranslation.at(0);
+        else
+            return "EMPTY";
     } else {
         return mTranslation.join("\n");
     }
