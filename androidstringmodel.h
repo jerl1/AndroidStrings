@@ -8,7 +8,7 @@
 class AndroidStringItem
 {
     public:
-        AndroidStringItem(const AndroidString &str, AndroidStringItem *parent = NULL);
+        AndroidStringItem(const AndroidString *str, AndroidStringItem *parent = NULL);
         ~AndroidStringItem();
 
         void appendChild(AndroidStringItem *child);
@@ -31,7 +31,7 @@ private:
         ColumnCount
     } columnDefinition;
 
-    AndroidString mString;
+    const AndroidString *mString;
     QList<AndroidStringItem*> childItems;
     AndroidStringItem *parentItem;
 };

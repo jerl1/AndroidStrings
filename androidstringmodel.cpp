@@ -1,6 +1,6 @@
 #include "androidstringmodel.h"
 
-AndroidStringItem::AndroidStringItem(const AndroidString &str, AndroidStringItem *parent)
+AndroidStringItem::AndroidStringItem(const AndroidString *str, AndroidStringItem *parent)
 {
     parentItem = parent;
     mString = str;
@@ -36,19 +36,19 @@ QVariant AndroidStringItem::data(int column) const
     switch (column) {
         case ColumnPath:
             //Check if we should display the path
-            if ((parentItem == NULL) || (parentItem->mString.path() != mString.path()))
-                return mString.path();
+            if ((parentItem == NULL) || (parentItem->mString->path() != mString->path()))
+                return mString->path();
             else
                 return QString("---");
         case ColumnAndroidLabel:
-        if ((parentItem == NULL) || (parentItem->mString.androidLabel() != mString.androidLabel()))
-            return mString.androidLabel();
+        if ((parentItem == NULL) || (parentItem->mString->androidLabel() != mString->androidLabel()))
+            return mString->androidLabel();
         else
             return QString("---");
         case ColumnLanguage:
-            return mString.language();
+            return mString->language();
         case ColumnTranslation:
-            return mString.formatedTranslation();
+            return mString->formatedTranslation();
     }
     return QVariant();
 }
@@ -71,11 +71,11 @@ int AndroidStringItem::row() const
 AndroidStringModel::AndroidStringModel(QList<AndroidString*> &list, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    AndroidString root;
-    root.setPath("Path");
-    root.setAndroidLabel("Label");
-    root.setLanguage("Language");
-    root.appendTranslation("Text");
+    AndroidString *root = new AndroidString();
+    root->setPath("Path");
+    root->setAndroidLabel("Label");
+    root->setLanguage("Language");
+    root->appendTranslation("Text");
     rootItem = new AndroidStringItem(root);
 
     setupModelData(list, rootItem);
@@ -183,18 +183,18 @@ void AndroidStringModel::setupModelData(QList<AndroidString*> &list, AndroidStri
         if ((previousString == NULL) ||
             (previousString->path() != androidString->path())) {
             //Need to attach to the root
-            childItem = new AndroidStringItem(*androidString, parent);
+            childItem = new AndroidStringItem(androidString, parent);
             parent->appendChild(childItem);
             //Save the parentItem if we must add one
             parentPathItem = childItem;
         } else {
             //Path are equal
             if (previousString->androidLabel() != androidString->androidLabel()) {
-                childItem = new AndroidStringItem(*androidString, parentPathItem);
+                childItem = new AndroidStringItem(androidString, parentPathItem);
                 parentPathItem->appendChild(childItem);
                 parentLabelItem = childItem;
             } else {
-                childItem = new AndroidStringItem(*androidString, parentLabelItem);
+                childItem = new AndroidStringItem(androidString, parentLabelItem);
                 parentLabelItem->appendChild(childItem);
             }
         }

@@ -11,8 +11,6 @@ public:
     explicit AndroidString(QObject *parent = 0);
     explicit AndroidString(const AndroidString *str, QObject *parent = 0);
 
-    AndroidString& operator= (const AndroidString &other);
-
     typedef enum _AndroidStringType {
         TypeString = 0,
         TypeArray,

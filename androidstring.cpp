@@ -16,18 +16,6 @@ AndroidString::AndroidString(const AndroidString *str, QObject *parent) :
     setType(str->type());
 }
 
-AndroidString& AndroidString::operator= (const AndroidString &other)
-{
-    setPath(other.path());
-    setAndroidLabel(other.androidLabel());
-    setLanguage(other.language());
-    setTranslation(other.translation());
-    setType(other.type());
-    setParent(other.parent());
-
-    return *this;
-}
-
 QString AndroidString::path() const
 {
     return mPath;
