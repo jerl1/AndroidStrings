@@ -6,11 +6,14 @@ AndroidStringReader::AndroidStringReader(QList<AndroidString*> *list, const QStr
     static const QString strUnknow("Unknow");
     static const QString strDefault("Default");
     mList = list;
-    mPath = path;
     int valuesIndex = path.lastIndexOf(strValues);
 
-    //Look for the language from the path
+    //Keep the path until strValues
+    mPath = path;
+    if(valuesIndex > 0)
+        mPath.truncate(valuesIndex - 1);
 
+    //Look for the language from the path
     if (valuesIndex == -1) {
         mLanguage = strUnknow;
     } else {

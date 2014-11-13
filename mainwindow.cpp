@@ -75,7 +75,7 @@ void MainWindow::on_parseButton_clicked()
         QFile file(xmlDir.path());
         file.open(QFile::ReadOnly | QFile::Text);
         QString smallPath = QFileInfo(file).absolutePath();
-        smallPath.remove(0, ui->frameworkLine->text().size());
+        smallPath.remove(0, ui->frameworkLine->text().size() + 1);
 
         AndroidStringReader reader(&mList, smallPath);
         if (reader.readFile(&file) == false) {

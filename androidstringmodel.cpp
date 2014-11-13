@@ -35,7 +35,10 @@ QVariant AndroidStringItem::data(int column) const
 {
     switch (column) {
         case ColumnPath:
-            return mString.path();
+            //Check if we should display the path
+            if ((parentItem == NULL) || (parentItem->mString.path() != mString.path()))
+                return mString.path();
+            break;
         case ColumnAndroidLabel:
             return mString.androidLabel();
         case ColumnLanguage:
