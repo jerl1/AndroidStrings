@@ -36,6 +36,8 @@ public:
     AndroidStringType type() const;
     void setType(const AndroidStringType &type);
 
+    static bool sort(const AndroidString *as1, const AndroidString *as2);
+
 private:
     QString mPath;
     QString mAndroidLabel;

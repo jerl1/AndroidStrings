@@ -74,14 +74,19 @@ void MainWindow::on_parseButton_clicked()
         QDir xmlDir = xmlIterator.next();
         QFile file(xmlDir.path());
         file.open(QFile::ReadOnly | QFile::Text);
+        QString smallPath = QFileInfo(file).absolutePath();
+        smallPath.remove(0, ui->frameworkLine->text().size());
 
-        AndroidStringReader reader(&mList, QFileInfo(file).absolutePath());
+        AndroidStringReader reader(&mList, smallPath);
         if (reader.readFile(&file) == false) {
             qWarning(qPrintable(QString("Parsing KO: ") + xmlDir.path()));
         } else {
             /*qDebug(qPrintable(QString("Parsing OK: ") + xmlDir.path()));*/
         }
     }
+
+    //Sort result
+    qSort(mList.begin(), mList.end(), AndroidString::sort);
 
     updateTreeWidget();
 }

@@ -91,3 +91,17 @@ void AndroidString::setType(const AndroidStringType &type)
 {
     mType = type;
 }
+
+bool AndroidString::sort(const AndroidString *as1, const AndroidString *as2)
+{
+    //Check path
+    int resultInt = as1->path().compare(as2->path());
+    if (resultInt == 0) {
+        //Check label
+        resultInt = as1->androidLabel().compare(as2->androidLabel());
+        if (resultInt == 0) {
+            resultInt = as1->language().compare(as2->language());
+        }
+    }
+    return resultInt < 0;
+}
