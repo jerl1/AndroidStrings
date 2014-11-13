@@ -52,11 +52,7 @@
         <number>3</number>
        </property>
        <item row="1" column="2">
-        <widget class="QLineEdit" name="excludeLine">
-         <property name="text">
-          <string>/home/jerome/projets/android/device</string>
-         </property>
-        </widget>
+        <widget class="QLineEdit" name="excludeLine"/>
        </item>
        <item row="2" column="0">
         <widget class="QLabel" name="label_3">
@@ -94,11 +90,7 @@
         </widget>
        </item>
        <item row="2" column="2">
-        <widget class="QLineEdit" name="overlayLine">
-         <property name="text">
-          <string>/home/jerome/projets/android/device/htc/common/overlay</string>
-         </property>
-        </widget>
+        <widget class="QLineEdit" name="overlayLine"/>
        </item>
        <item row="1" column="3">
         <widget class="QPushButton" name="excludeButton">
@@ -108,11 +100,7 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QLineEdit" name="sourceLine">
-         <property name="text">
-          <string>/home/jerome/tmp</string>
-         </property>
-        </widget>
+        <widget class="QLineEdit" name="sourceLine"/>
        </item>
       </layout>
      </widget>
@@ -174,6 +162,17 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>sourceLine</tabstop>
+  <tabstop>sourceButton</tabstop>
+  <tabstop>excludeLine</tabstop>
+  <tabstop>excludeButton</tabstop>
+  <tabstop>overlayLine</tabstop>
+  <tabstop>overlayButton</tabstop>
+  <tabstop>treeView</tabstop>
+  <tabstop>exportButton</tabstop>
+  <tabstop>parseButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

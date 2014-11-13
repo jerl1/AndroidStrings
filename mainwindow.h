@@ -32,6 +32,9 @@ private:
     void selectDirectory(QLineEdit *line);
     void updateTreeWidget();
     QDirIterator *newDirIterator(QLineEdit *line);
+    void updateList(QList<AndroidString*> *list,
+                    QLineEdit *source, QLineEdit *exclude = NULL);
+    void overloadList();
 
     QList<AndroidString*> mList;
     AndroidStringModel *mModel;

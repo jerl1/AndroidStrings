@@ -77,17 +77,20 @@ void MainWindow::on_overlayButton_clicked()
     selectDirectory(ui->overlayLine);
 }
 
-void MainWindow::on_parseButton_clicked()
+void MainWindow::updateList(QList<AndroidString*> *list,
+                            QLineEdit *source, QLineEdit *exclude)
 {
-    while (!mList.isEmpty())
-        delete mList.takeFirst();
-
-    QString excludePath = ui->excludeLine->text();
+    QString excludePath;
+    if (exclude != NULL)
+        excludePath = exclude->text();
     if (excludePath.size() == 0)
         excludePath = ";"; //Somethings not empty, else everythings will be excluded
 
+    while (!list->isEmpty())
+        delete list->takeFirst();
+
     //Look for all xml files
-    QDirIterator *sourcesIterator = newDirIterator(ui->sourceLine);
+    QDirIterator *sourcesIterator = newDirIterator(source);
     while (sourcesIterator->hasNext()) {
         QDir xmlDir = sourcesIterator->next();
 
@@ -97,9 +100,9 @@ void MainWindow::on_parseButton_clicked()
         QFile file(xmlDir.path());
         file.open(QFile::ReadOnly | QFile::Text);
         QString smallPath = QFileInfo(file).absolutePath();
-        smallPath.remove(0, ui->sourceLine->text().size() + 1);
+        smallPath.remove(0, source->text().size() + 1);
 
-        AndroidStringReader reader(&mList, smallPath);
+        AndroidStringReader reader(list, smallPath);
         if (reader.readFile(&file) == false) {
             qWarning(qPrintable(QString("Parsing KO: ") + xmlDir.path()));
         } else {
@@ -107,6 +110,32 @@ void MainWindow::on_parseButton_clicked()
         }
     }
     delete sourcesIterator;
+}
+
+void MainWindow::overloadList()
+{
+    //Now retrieved all that have been overloaded
+    QList<AndroidString*> overloadedList;
+    updateList(&overloadedList, ui->overlayLine);
+
+    foreach (AndroidString *overStr, overloadedList) {
+        foreach (AndroidString *sourceStr, mList) {
+            if ((overStr->path() == sourceStr->path()) &&
+                (overStr->androidLabel() == sourceStr->androidLabel()) &&
+                (overStr->language() == sourceStr->language())) {
+                overStr->setOverided(true);
+                mList.removeAll(sourceStr);
+                mList.append(overStr);
+                break;
+            }
+        }
+    }
+}
+
+void MainWindow::on_parseButton_clicked()
+{
+    updateList(&mList, ui->sourceLine, ui->excludeLine);
+    overloadList();
 
     //Sort result
     qSort(mList.begin(), mList.end(), AndroidString::sort);
