@@ -31,6 +31,10 @@ void MainWindow::updateTreeWidget()
     delete mModel;
     mModel = new AndroidStringModel(mList);
     ui->treeView->setModel(mModel);
+
+    /* Cosmetic change */
+    for (int i = 0; i < mModel->columnCount(); i++)
+        ui->treeView->resizeColumnToContents(i);
 }
 
 void MainWindow::selectDirectory(QLineEdit *line)
