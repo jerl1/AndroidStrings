@@ -3,16 +3,29 @@
 AndroidString::AndroidString(QObject *parent) :
     QObject(parent)
 {
+    mType = TypeString;
 }
 
-AndroidString::AndroidString(AndroidString &str, QObject *parent) :
+AndroidString::AndroidString(const AndroidString *str, QObject *parent) :
     QObject(parent)
 {
-    setPath(str.path());
-    setAndroidLabel(str.androidLabel());
-    setLanguage(str.language());
-    setText(str.text());
-    setType(str.type());
+    setPath(str->path());
+    setAndroidLabel(str->androidLabel());
+    setLanguage(str->language());
+    setTranslation(str->translation());
+    setType(str->type());
+}
+
+AndroidString& AndroidString::operator= (const AndroidString &other)
+{
+    setPath(other.path());
+    setAndroidLabel(other.androidLabel());
+    setLanguage(other.language());
+    setTranslation(other.translation());
+    setType(other.type());
+    setParent(other.parent());
+
+    return *this;
 }
 
 QString AndroidString::path() const
@@ -45,19 +58,28 @@ void AndroidString::setLanguage(const QString &language)
     mLanguage = language;
 }
 
-QStringList AndroidString::text() const
+QStringList AndroidString::translation() const
 {
-    return mText;
+    return mTranslation;
 }
 
-void AndroidString::setText(const QStringList &text)
+void AndroidString::setTranslation(const QStringList &translation)
 {
-    mText = text;
+    mTranslation = translation;
 }
 
-void AndroidString::appendText(const QString &text)
+void AndroidString::appendTranslation(const QString &translation)
 {
-    mText.append(text);
+    mTranslation.append(translation);
+}
+
+QString AndroidString::formatedTranslation() const
+{
+    if (mType == TypeString) {
+        return mTranslation.at(0);
+    } else {
+        return mTranslation.join("\n");
+    }
 }
 
 AndroidString::AndroidStringType AndroidString::type() const

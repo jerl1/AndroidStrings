@@ -9,12 +9,14 @@ class AndroidString : public QObject
     Q_OBJECT
 public:
     explicit AndroidString(QObject *parent = 0);
-    explicit AndroidString(AndroidString &str, QObject *parent = 0);
+    explicit AndroidString(const AndroidString *str, QObject *parent = 0);
+
+    AndroidString& operator= (const AndroidString &other);
 
     typedef enum _AndroidStringType {
-        string = 0,
-        array,
-        quantity
+        TypeString = 0,
+        TypeArray,
+        TypeQuantity
     } AndroidStringType;
 
     QString path() const;
@@ -26,9 +28,10 @@ public:
     QString language() const;
     void setLanguage(const QString &language);
 
-    QStringList text() const;
-    void setText(const QStringList &text);
-    void appendText(const QString &text);
+    QStringList translation() const;
+    void setTranslation(const QStringList &translation);
+    void appendTranslation(const QString &translation);
+    QString formatedTranslation() const;
 
     AndroidStringType type() const;
     void setType(const AndroidStringType &type);
@@ -37,9 +40,10 @@ private:
     QString mPath;
     QString mAndroidLabel;
     QString mLanguage;
-    QStringList mText;
+    QStringList mTranslation;
 
     AndroidStringType mType;
+
 };
 
 #endif // ANDROIDSTRING_H

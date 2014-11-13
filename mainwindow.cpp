@@ -5,18 +5,22 @@
 #include <QFileInfo>
 
 #include "androidstringreader.h"
+#include "androidstringmodel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    mModel = new AndroidStringModel(mList);
+    ui->treeView->setModel(mModel);
 }
 
 MainWindow::~MainWindow()
 {
-    ui->treeWidget->clear();
     delete ui;
+    delete mModel;
 
     while (!mList.isEmpty())
         delete mList.takeFirst();
@@ -24,17 +28,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateTreeWidget()
 {
-    //Clear the treeWidget
-    ui->treeWidget->clear();
-
-    foreach (AndroidString *android, mList) {
-        AndroidStringItem *item = new AndroidStringItem();
-        item->set(*android);
-        ui->treeWidget->addTopLevelItem(item);
-    }
-
-    for (int i = 0; i < ui->treeWidget->columnCount(); i++)
-        ui->treeWidget->resizeColumnToContents(i);
+    delete mModel;
+    mModel = new AndroidStringModel(mList);
+    ui->treeView->setModel(mModel);
 }
 
 void MainWindow::selectDirectory(QLineEdit *line)
@@ -65,7 +61,8 @@ void MainWindow::on_deviceButton_clicked()
 
 void MainWindow::on_parseButton_clicked()
 {
-    mList.clear();
+    while (!mList.isEmpty())
+        delete mList.takeFirst();
 
     //Look for all xml files
     QDir directory(ui->frameworkLine->text());
@@ -87,19 +84,4 @@ void MainWindow::on_parseButton_clicked()
     }
 
     updateTreeWidget();
-}
-
-void AndroidStringItem::set(const QString path, const QString android,
-                            const QString language, const QString text,
-                            const AndroidString::AndroidStringType /*type*/)
-{
-    setData(AndroidStringItem::path, Qt::DisplayRole, path);
-    setData(AndroidStringItem::android, Qt::DisplayRole, android);
-    setData(AndroidStringItem::language, Qt::DisplayRole, language);
-    setData(AndroidStringItem::text, Qt::DisplayRole, text);
-}
-
-void AndroidStringItem::set(const AndroidString &str)
-{
-    set(str.path(), str.androidLabel(), str.language(), str.text()[0], str.type());
 }

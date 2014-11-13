@@ -52,7 +52,7 @@ bool AndroidStringReader::readFile(QIODevice *device)
             if (add) {
                 str.setPath(mPath);
                 str.setLanguage(mLanguage);
-                mList->append(new AndroidString(str));
+                mList->append(new AndroidString(&str));
             }
         }
     }
@@ -63,18 +63,18 @@ bool AndroidStringReader::readFile(QIODevice *device)
 
 bool AndroidStringReader::readString(AndroidString &str)
 {
-    str.setType(AndroidString::string);
-    str.appendText(readElementText());
+    str.setType(AndroidString::TypeString);
+    str.appendTranslation(readElementText());
     return true;
 }
 
 bool AndroidStringReader::readStringArray(AndroidString &str)
 {
-    str.setType(AndroidString::array);
+    str.setType(AndroidString::TypeArray);
     while (!atEnd() && !hasError()) {
         QXmlStreamReader::TokenType token = readNext();
         if(token == QXmlStreamReader::StartElement) {
-            str.appendText(readElementText());
+            str.appendTranslation(readElementText());
         } else if(token == QXmlStreamReader::EndElement) {
             break;
         }
@@ -86,7 +86,7 @@ bool AndroidStringReader::readStringArray(AndroidString &str)
 bool AndroidStringReader::readQuantity(AndroidString &str)
 {
     //TODO
-    str.setType(AndroidString::quantity);
+    str.setType(AndroidString::TypeQuantity);
     qDebug(qPrintable("Skipping quantity"));
     return false;
 }

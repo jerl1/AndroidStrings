@@ -3,8 +3,9 @@
 
 #include <QMainWindow>
 #include <QLineEdit>
-#include <QTreeWidgetItem>
+
 #include "androidstring.h"
+#include "androidstringmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,25 +33,7 @@ private:
     void updateTreeWidget();
 
     QList<AndroidString*> mList;
-};
-
-class AndroidStringItem: public QTreeWidgetItem
-{
-private:
-    typedef enum _column
-    {
-        path = 0,
-        android,
-        language,
-        text,
-        type
-    } column;
-
-    void set(const QString path, const QString android,
-             const QString language, const QString text, const AndroidString::AndroidStringType type);
-
-public:
-    void set(const AndroidString &str);
+    AndroidStringModel *mModel;
 };
 
 #endif // MAINWINDOW_H

@@ -59,28 +59,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QTreeWidget" name="treeWidget">
-      <column>
-       <property name="text">
-        <string>Path</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Android label</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Language</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Text</string>
-       </property>
-      </column>
-     </widget>
+     <widget class="QTreeView" name="treeView"/>
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
