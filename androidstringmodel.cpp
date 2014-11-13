@@ -38,9 +38,13 @@ QVariant AndroidStringItem::data(int column) const
             //Check if we should display the path
             if ((parentItem == NULL) || (parentItem->mString.path() != mString.path()))
                 return mString.path();
-            break;
+            else
+                return QString("---");
         case ColumnAndroidLabel:
+        if ((parentItem == NULL) || (parentItem->mString.androidLabel() != mString.androidLabel()))
             return mString.androidLabel();
+        else
+            return QString("---");
         case ColumnLanguage:
             return mString.language();
         case ColumnTranslation:
@@ -171,20 +175,28 @@ int AndroidStringModel::rowCount(const QModelIndex &parent) const
 void AndroidStringModel::setupModelData(QList<AndroidString*> &list, AndroidStringItem *parent)
 {
     AndroidString *previousString = NULL;
-    AndroidStringItem *parentItem = NULL;
-    AndroidStringItem *childItem = NULL;
+    AndroidStringItem *parentPathItem = NULL;
+    AndroidStringItem *parentLabelItem = NULL;
 
     foreach (AndroidString *androidString, list) {
+        AndroidStringItem *childItem = NULL;
         if ((previousString == NULL) ||
             (previousString->path() != androidString->path())) {
             //Need to attach to the root
             childItem = new AndroidStringItem(*androidString, parent);
             parent->appendChild(childItem);
             //Save the parentItem if we must add one
-            parentItem = childItem;
+            parentPathItem = childItem;
         } else {
-            childItem = new AndroidStringItem(*androidString, parentItem);
-            parentItem->appendChild(childItem);
+            //Path are equal
+            if (previousString->androidLabel() != androidString->androidLabel()) {
+                childItem = new AndroidStringItem(*androidString, parentPathItem);
+                parentPathItem->appendChild(childItem);
+                parentLabelItem = childItem;
+            } else {
+                childItem = new AndroidStringItem(*androidString, parentLabelItem);
+                parentLabelItem->appendChild(childItem);
+            }
         }
         previousString = androidString;
     }
