@@ -108,3 +108,28 @@ void AndroidString::setOverided(bool overided)
 {
     mOverided = overided;
 }
+
+QString AndroidString::exportCSV()
+{
+    static const QString separator = ";";
+//    static const QChar sep = 10;
+    QString csv;
+    csv += path() + separator;
+    csv += androidLabel() + separator;
+    csv += language() + separator;
+    switch (type()) {
+        case TypeString:
+            csv += QString("string") + separator;
+            break;
+        case TypeArray:
+            csv += QString("array") + separator;
+            break;
+        case TypeQuantity:
+            csv += QString("quantity") + separator;
+            break;
+    }
+//    csv += '"' + mTranslation.join(sep) + '"';
+    csv += mTranslation.join(separator);
+
+    return csv;
+}

@@ -26,6 +26,8 @@ private slots:
     void on_excludeButton_clicked();
     void on_overlayButton_clicked();
 
+    void on_exportButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QTextStream>
 
 #include "androidstringreader.h"
 #include "androidstringmodel.h"
@@ -141,4 +142,21 @@ void MainWindow::on_parseButton_clicked()
     qSort(mList.begin(), mList.end(), AndroidString::sort);
 
     updateTreeWidget();
+}
+
+void MainWindow::on_exportButton_clicked()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export file"));
+    if (filename.size() > 0) {
+        QFile file(filename);
+        if (file.open(QFile::WriteOnly|QFile::Truncate))
+        {
+            QTextStream stream(&file);
+            stream <<  "Path;Android label;Language;Type;Text\n";
+            foreach (AndroidString *str, mList) {
+                stream << str->exportCSV() << "\n";
+            }
+            file.close();
+        }
+    }
 }

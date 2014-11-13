@@ -88,6 +88,15 @@ bool AndroidStringReader::readQuantity(AndroidString &str)
     return readEndToken(str, xml_plurals);
 }
 
+static void append(AndroidString &astr, QString &str)
+{
+    str = str.simplified();
+    if ((str.size() > 0) && (str[0] == '"'))
+        str = str.mid(1, str.size() - 2);
+
+    astr.appendTranslation(str);
+}
+
 bool AndroidStringReader::readEndToken(AndroidString &str, QString endToken)
 {
     QString item;
@@ -115,11 +124,11 @@ bool AndroidStringReader::readEndToken(AndroidString &str, QString endToken)
             case QXmlStreamReader::EndElement:
                 if (name() == endToken) {
                     if (item.size() > 0) {
-                        str.appendTranslation(item);
+                        append(str, item);
                     }
                     return true;
                 } else {
-                    str.appendTranslation(item);
+                    append(str, item);
                     item.clear();
                 }
                 break;

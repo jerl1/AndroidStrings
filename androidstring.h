@@ -38,6 +38,7 @@ public:
 
     bool overided() const;
     void setOverided(bool overided);
+    QString exportCSV();
 
 private:
     QString mPath;
