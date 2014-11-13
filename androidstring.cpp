@@ -4,6 +4,7 @@ AndroidString::AndroidString(QObject *parent) :
     QObject(parent)
 {
     mType = TypeString;
+    mOverided = false;
 }
 
 AndroidString::AndroidString(const AndroidString *str, QObject *parent) :
@@ -14,6 +15,7 @@ AndroidString::AndroidString(const AndroidString *str, QObject *parent) :
     setLanguage(str->language());
     setTranslation(str->translation());
     setType(str->type());
+    setOverided(str->overided());
 }
 
 QString AndroidString::path() const
@@ -92,4 +94,14 @@ bool AndroidString::sort(const AndroidString *as1, const AndroidString *as2)
         }
     }
     return resultInt < 0;
+}
+
+bool AndroidString::overided() const
+{
+    return mOverided;
+}
+
+void AndroidString::setOverided(bool overided)
+{
+    mOverided = overided;
 }

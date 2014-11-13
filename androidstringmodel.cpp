@@ -1,5 +1,7 @@
 #include "androidstringmodel.h"
 
+#include <QColor>
+
 AndroidStringItem::AndroidStringItem(const AndroidString *str, AndroidStringItem *parent)
 {
     parentItem = parent;
@@ -41,14 +43,17 @@ QVariant AndroidStringItem::data(int column) const
             else
                 return QString("---");
         case ColumnAndroidLabel:
-        if ((parentItem == NULL) || (parentItem->mString->androidLabel() != mString->androidLabel()))
-            return mString->androidLabel();
-        else
-            return QString("---");
+            if ((parentItem == NULL) ||
+                (parentItem->mString->androidLabel() != mString->androidLabel()))
+                return mString->androidLabel();
+            else
+                return QString("---");
         case ColumnLanguage:
             return mString->language();
         case ColumnTranslation:
             return mString->formatedTranslation();
+        case ColumnOverided:
+            return mString->overided();
     }
     return QVariant();
 }
@@ -96,15 +101,20 @@ int AndroidStringModel::columnCount(const QModelIndex &parent) const
 
 QVariant AndroidStringModel::data(const QModelIndex &index, int role) const
 {
+    AndroidStringItem *item = static_cast<AndroidStringItem*>(index.internalPointer());
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
+    if (role == Qt::ForegroundRole) {
+        if (item->data(AndroidStringItem::ColumnOverided).toBool())
+            return QVariant(QColor(Qt::blue));
+        else
+            return QVariant(QColor(Qt::black));
+    } else if (role == Qt::DisplayRole) {
+        return item->data(index.column());
+    } else {
         return QVariant();
-
-    AndroidStringItem *item = static_cast<AndroidStringItem*>(index.internalPointer());
-
-    return item->data(index.column());
+    }
 }
 
 Qt::ItemFlags AndroidStringModel::flags(const QModelIndex &index) const

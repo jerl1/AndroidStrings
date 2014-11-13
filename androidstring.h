@@ -11,6 +11,8 @@ public:
     explicit AndroidString(QObject *parent = 0);
     explicit AndroidString(const AndroidString *str, QObject *parent = 0);
 
+    static bool sort(const AndroidString *as1, const AndroidString *as2);
+
     typedef enum _AndroidStringType {
         TypeString = 0,
         TypeArray,
@@ -34,7 +36,8 @@ public:
     AndroidStringType type() const;
     void setType(const AndroidStringType &type);
 
-    static bool sort(const AndroidString *as1, const AndroidString *as2);
+    bool overided() const;
+    void setOverided(bool overided);
 
 private:
     QString mPath;
@@ -43,7 +46,7 @@ private:
     QStringList mTranslation;
 
     AndroidStringType mType;
-
+    bool mOverided;
 };
 
 #endif // ANDROIDSTRING_H

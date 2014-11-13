@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QLineEdit>
+#include <QDirIterator>
 
 #include "androidstring.h"
 #include "androidstringmodel.h"
@@ -33,6 +34,7 @@ private:
 
     void selectDirectory(QLineEdit *line);
     void updateTreeWidget();
+    QDirIterator *newDirIterator(QLineEdit *line);
 
     QList<AndroidString*> mList;
     AndroidStringModel *mModel;

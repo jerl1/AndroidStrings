@@ -21,19 +21,21 @@ class AndroidStringItem
         AndroidStringItem *parent();
         AndroidStringItem *child(int row);
 
-private:
-    typedef enum _columnDefinition
-    {
-        ColumnPath = 0,
-        ColumnAndroidLabel,
-        ColumnLanguage,
-        ColumnTranslation,
-        ColumnCount
-    } columnDefinition;
+        typedef enum _columnDefinition
+        {
+            ColumnPath = 0,
+            ColumnAndroidLabel,
+            ColumnLanguage,
+            ColumnTranslation,
+            ColumnCount, //Last displayed column
+            ColumnType,
+            ColumnOverided
+        } columnDefinition;
 
-    const AndroidString *mString;
-    QList<AndroidStringItem*> childItems;
-    AndroidStringItem *parentItem;
+    private:
+        const AndroidString *mString;
+        QList<AndroidStringItem*> childItems;
+        AndroidStringItem *parentItem;
 };
 
 class AndroidStringModel : public QAbstractItemModel

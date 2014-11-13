@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
-#include <QDirIterator>
 #include <QFileInfo>
 
 #include "androidstringreader.h"
@@ -37,6 +36,16 @@ void MainWindow::updateTreeWidget()
         ui->treeView->resizeColumnToContents(i);
 }
 
+QDirIterator *MainWindow::newDirIterator(QLineEdit *line)
+{
+    QDir sourcesDirectory(line->text());
+    sourcesDirectory.setNameFilters(QStringList("*tring*.xml"));
+    sourcesDirectory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Readable);
+    sourcesDirectory.setSorting(QDir::Name);
+
+    return new QDirIterator(sourcesDirectory, QDirIterator::Subdirectories);
+}
+
 void MainWindow::selectDirectory(QLineEdit *line)
 {
     if (line == NULL)
@@ -70,18 +79,22 @@ void MainWindow::on_deviceButton_clicked()
 
 void MainWindow::on_parseButton_clicked()
 {
+    //Free list
     while (!mList.isEmpty())
         delete mList.takeFirst();
 
-    //Look for all xml files
-    QDir directory(ui->sourceLine->text());
-    QDir deviceDirectory(ui->deviceLine->text());
-    directory.setNameFilters(QStringList("*tring*.xml"));
-    directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Readable);
+    QString excludePath = ui->excludeLine->text();
+    if (excludePath.size() == 0)
+        excludePath = "----";
 
-    QDirIterator xmlIterator(directory, QDirIterator::Subdirectories);
-    while (xmlIterator.hasNext()) {
-        QDir xmlDir = xmlIterator.next();
+    //Look for all xml files
+    QDirIterator *sourcesIterator = newDirIterator(ui->sourceLine);
+    while (sourcesIterator->hasNext()) {
+        QDir xmlDir = sourcesIterator->next();
+
+        if (xmlDir.path().startsWith(excludePath))
+            continue;
+
         QFile file(xmlDir.path());
         file.open(QFile::ReadOnly | QFile::Text);
         QString smallPath = QFileInfo(file).absolutePath();
@@ -94,6 +107,7 @@ void MainWindow::on_parseButton_clicked()
             /*qDebug(qPrintable(QString("Parsing OK: ") + xmlDir.path()));*/
         }
     }
+    delete sourcesIterator;
 
     //Sort result
     qSort(mList.begin(), mList.end(), AndroidString::sort);
