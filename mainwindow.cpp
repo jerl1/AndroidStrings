@@ -53,9 +53,14 @@ void MainWindow::selectDirectory(QLineEdit *line)
     }
 }
 
-void MainWindow::on_frameworkButton_clicked()
+void MainWindow::on_sourceButton_clicked()
 {
-    selectDirectory(ui->frameworkLine);
+    selectDirectory(ui->sourceLine);
+}
+
+void MainWindow::on_excludeButton_clicked()
+{
+    selectDirectory(ui->excludeLine);
 }
 
 void MainWindow::on_deviceButton_clicked()
@@ -69,7 +74,8 @@ void MainWindow::on_parseButton_clicked()
         delete mList.takeFirst();
 
     //Look for all xml files
-    QDir directory(ui->frameworkLine->text());
+    QDir directory(ui->sourceLine->text());
+    QDir deviceDirectory(ui->deviceLine->text());
     directory.setNameFilters(QStringList("*tring*.xml"));
     directory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Readable);
 
@@ -79,7 +85,7 @@ void MainWindow::on_parseButton_clicked()
         QFile file(xmlDir.path());
         file.open(QFile::ReadOnly | QFile::Text);
         QString smallPath = QFileInfo(file).absolutePath();
-        smallPath.remove(0, ui->frameworkLine->text().size() + 1);
+        smallPath.remove(0, ui->sourceLine->text().size() + 1);
 
         AndroidStringReader reader(&mList, smallPath);
         if (reader.readFile(&file) == false) {
@@ -94,3 +100,5 @@ void MainWindow::on_parseButton_clicked()
 
     updateTreeWidget();
 }
+
+

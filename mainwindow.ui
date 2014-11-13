@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>636</width>
-    <height>435</height>
+    <width>774</width>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,24 +15,67 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>3</number>
+    </property>
+    <property name="leftMargin">
+     <number>3</number>
+    </property>
+    <property name="topMargin">
+     <number>3</number>
+    </property>
+    <property name="rightMargin">
+     <number>3</number>
+    </property>
+    <property name="bottomMargin">
+     <number>3</number>
+    </property>
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
        <string>Paths</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <property name="spacing">
+        <number>3</number>
+       </property>
+       <item row="0" column="2">
+        <widget class="QLineEdit" name="sourceLine"/>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="excludeLine"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="deviceLine"/>
+       </item>
+       <item row="2" column="3">
+        <widget class="QPushButton" name="deviceButton">
          <property name="text">
-          <string>Framework</string>
+          <string>Browse</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QLineEdit" name="frameworkLine"/>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="excludeButton">
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="frameworkButton">
+       <item row="0" column="3">
+        <widget class="QPushButton" name="sourceButton">
          <property name="text">
           <string>Browse</string>
          </property>
@@ -41,17 +84,21 @@
        <item row="1" column="0">
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Device</string>
+          <string>Exclude</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="deviceLine"/>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="deviceButton">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
          <property name="text">
-          <string>Browse</string>
+          <string>Sources</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Device</string>
          </property>
         </widget>
        </item>
@@ -67,13 +114,21 @@
     </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLineEdit" name="filterLine">
-        <property name="text">
-         <string>Filter</string>
-        </property>
-       </widget>
-      </item>
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <property name="leftMargin">
+       <number>3</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>3</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
+      </property>
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -105,25 +160,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>636</width>
-     <height>27</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-  </widget>
-  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
