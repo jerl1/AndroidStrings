@@ -37,14 +37,13 @@ void MainWindow::updateTreeWidget()
         ui->treeView->resizeColumnToContents(i);
 }
 
-QDirIterator *MainWindow::newDirIterator(QLineEdit *line)
+QDirIterator *MainWindow::newDirIterator(QDir &source)
 {
-    QDir sourcesDirectory(line->text());
-    sourcesDirectory.setNameFilters(QStringList("*tring*.xml"));
-    sourcesDirectory.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Readable);
-    sourcesDirectory.setSorting(QDir::Name);
+    source.setNameFilters(QStringList("*tring*.xml"));
+    source.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks | QDir::Readable);
+    source.setSorting(QDir::Name);
 
-    return new QDirIterator(sourcesDirectory, QDirIterator::Subdirectories);
+    return new QDirIterator(source, QDirIterator::Subdirectories);
 }
 
 void MainWindow::selectDirectory(QLineEdit *line)
@@ -81,33 +80,40 @@ void MainWindow::on_overlayButton_clicked()
 void MainWindow::updateList(QList<AndroidString*> *list,
                             QLineEdit *source, QLineEdit *exclude)
 {
+    if ((source == NULL) || (source->text().size() <= 0))
+        return;
+
+    QDir sourceDir;
+    sourceDir = QDir(source->text());
+    sourceDir.makeAbsolute();
+
     QString excludePath;
-    if (exclude != NULL)
-        excludePath = exclude->text();
-    if (excludePath.size() == 0)
-        excludePath = ";"; //Somethings not empty, else everythings will be excluded
+    if ((exclude != NULL) && (exclude->text().size() > 0))
+        excludePath = QDir(exclude->text()).absolutePath();
+    else
+        excludePath = ";";
 
     while (!list->isEmpty())
         delete list->takeFirst();
 
     //Look for all xml files
-    QDirIterator *sourcesIterator = newDirIterator(source);
+    QDirIterator *sourcesIterator = newDirIterator(sourceDir);
     while (sourcesIterator->hasNext()) {
         QDir xmlDir = sourcesIterator->next();
+        xmlDir.makeAbsolute();
 
         if (xmlDir.path().startsWith(excludePath))
             continue;
 
         QFile file(xmlDir.path());
         file.open(QFile::ReadOnly | QFile::Text);
-        QString smallPath = QFileInfo(file).absolutePath();
-        smallPath.remove(0, source->text().size() + 1);
+        QString smallPath = QFileInfo(file).absolutePath().remove(sourceDir.path() + "/");
 
         AndroidStringReader reader(list, smallPath);
         if (reader.readFile(&file) == false) {
-            qWarning(qPrintable(QString("Parsing KO: ") + xmlDir.path()));
+            qWarning(qPrintable(QString("Parsing KO: ") + QFileInfo(file).absoluteFilePath()));
         } else {
-            /*qDebug(qPrintable(QString("Parsing OK: ") + xmlDir.path()));*/
+            //qDebug(qPrintable(QString("Parsing OK: ") + QFileInfo(file).absoluteFilePath()));
         }
     }
     delete sourcesIterator;
