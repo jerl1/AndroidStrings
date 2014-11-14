@@ -21,16 +21,15 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete mModel;
-
-    while (!mList.isEmpty())
-        delete mList.takeFirst();
+    qDeleteAll(mList);
 }
 
 void MainWindow::updateTreeWidget()
 {
-    delete mModel;
+    AndroidStringModel *tmpModel = mModel;
     mModel = new AndroidStringModel(mList);
     ui->treeView->setModel(mModel);
+    delete tmpModel;
 
     /* Cosmetic change */
     for (int i = 0; i < mModel->columnCount(); i++)
@@ -93,9 +92,6 @@ void MainWindow::updateList(QList<AndroidString*> *list,
     else
         excludePath = ";";
 
-    while (!list->isEmpty())
-        delete list->takeFirst();
-
     //Look for all xml files
     QDirIterator *sourcesIterator = newDirIterator(sourceDir);
     while (sourcesIterator->hasNext()) {
@@ -141,13 +137,23 @@ void MainWindow::overloadList()
 
 void MainWindow::on_parseButton_clicked()
 {
-    updateList(&mList, ui->sourceLine, ui->excludeLine);
-    overloadList();
+    //Create a fake list just for the updating process
+    QList<AndroidString*> tmpList;
 
-    //Sort result
-    qSort(mList.begin(), mList.end(), AndroidString::sort);
+    updateUI(false);
+    AndroidStringModel *tmpModel = mModel;
+    mModel = new AndroidStringModel(tmpList);
+    ui->treeView->setModel(mModel);
+    delete tmpModel;
 
-    updateTreeWidget();
+    //Clear the list of translation
+    while (!mList.isEmpty())
+        delete mList.takeFirst();
+
+    ParseThread *workerThread = new ParseThread(this);
+    connect(workerThread, &ParseThread::resultReady, this, &MainWindow::handleResults);
+    connect(workerThread, &ParseThread::finished, workerThread, &QObject::deleteLater);
+    workerThread->start();
 }
 
 void MainWindow::on_exportButton_clicked()
@@ -165,4 +171,46 @@ void MainWindow::on_exportButton_clicked()
             file.close();
         }
     }
+}
+
+void MainWindow::handleResults(const int &result)
+{
+    if (result > 0) {
+        //Sort result
+        qSort(mList.begin(), mList.end(), AndroidString::sort);
+
+        updateTreeWidget();
+    }
+    updateUI(true);
+}
+
+int MainWindow::parserRun()
+{
+    updateList(&mList, ui->sourceLine, ui->excludeLine);
+    overloadList();
+
+    return 1;
+}
+
+void MainWindow::updateUI(const bool enable)
+{
+    ui->sourceButton->setEnabled(enable);
+    ui->excludeButton->setEnabled(enable);
+    ui->overlayButton->setEnabled(enable);
+    ui->parseButton->setEnabled(enable);
+    ui->exportButton->setEnabled(enable);
+}
+
+//------------------------------------------------
+
+ParseThread::ParseThread(MainWindow *win) :
+    mMainWindow(win)
+{
+
+}
+
+void ParseThread::run()
+{
+    int result = mMainWindow->parserRun();
+    emit resultReady(result);
 }

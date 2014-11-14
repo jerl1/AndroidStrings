@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QLineEdit>
 #include <QDirIterator>
+#include <QThread>
 
 #include "androidstring.h"
 #include "androidstringmodel.h"
@@ -20,13 +21,16 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    int parserRun();
+
 private slots:
     void on_parseButton_clicked();
     void on_sourceButton_clicked();
     void on_excludeButton_clicked();
     void on_overlayButton_clicked();
-
     void on_exportButton_clicked();
+
+    void handleResults(const int &result);
 
 private:
     Ui::MainWindow *ui;
@@ -37,9 +41,25 @@ private:
     void updateList(QList<AndroidString*> *list,
                     QLineEdit *source, QLineEdit *exclude = NULL);
     void overloadList();
+    void updateUI(const bool enable);
 
     QList<AndroidString*> mList;
     AndroidStringModel *mModel;
+};
+
+class ParseThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    ParseThread(MainWindow *win);
+    void run();
+
+private:
+    MainWindow *mMainWindow;
+
+signals:
+    void resultReady(const int &result);
 };
 
 #endif // MAINWINDOW_H
