@@ -23,11 +23,14 @@ AndroidStringReader::AndroidStringReader(QList<AndroidString*> *list, const QStr
     if (valuesIndex == -1) {
         mLanguage = strUnknow;
     } else {
-        QString lang = path.right(path.length() - valuesIndex);
+        QString lang = path;
+        lang.remove(mPath + '/');
         if (lang == strValues)
             mLanguage = strDefault;
-        else
-            mLanguage = lang.right(lang.length() - lang.indexOf('-') - 1);
+        else {
+            mLanguage = lang;
+            mLanguage.remove(strValues + '-');
+        }
     }
 }
 
