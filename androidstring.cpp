@@ -88,12 +88,12 @@ void AndroidString::setType(const AndroidStringType &type)
 bool AndroidString::sort(const AndroidString *as1, const AndroidString *as2)
 {
     //Check path
-    int resultInt = as1->path().compare(as2->path());
+    int resultInt = as1->path().compare(as2->path(), Qt::CaseSensitive);
     if (resultInt == 0) {
         //Check label
-        resultInt = as1->androidLabel().compare(as2->androidLabel());
+        resultInt = as1->androidLabel().compare(as2->androidLabel(), Qt::CaseInsensitive);
         if (resultInt == 0) {
-            resultInt = as1->language().compare(as2->language());
+            resultInt = as1->language().compare(as2->language(), Qt::CaseSensitive);
         }
     }
     return resultInt < 0;
