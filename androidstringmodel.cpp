@@ -197,6 +197,7 @@ void AndroidStringModel::setupModelData(QList<AndroidString*> &list, AndroidStri
             parent->appendChild(childItem);
             //Save the parentItem if we must add one
             parentPathItem = childItem;
+            parentLabelItem = parentPathItem;
         } else {
             //Path are equal
             if (previousString->androidLabel() != androidString->androidLabel()) {
@@ -204,8 +205,6 @@ void AndroidStringModel::setupModelData(QList<AndroidString*> &list, AndroidStri
                 parentPathItem->appendChild(childItem);
                 parentLabelItem = childItem;
             } else {
-                if (parentLabelItem == NULL)
-                    parentLabelItem = parentPathItem;
                 childItem = new AndroidStringItem(androidString, parentLabelItem);
                 parentLabelItem->appendChild(childItem);
             }
