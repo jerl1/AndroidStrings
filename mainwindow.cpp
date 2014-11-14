@@ -164,9 +164,13 @@ void MainWindow::on_exportButton_clicked()
         if (file.open(QFile::WriteOnly|QFile::Truncate))
         {
             QTextStream stream(&file);
-            stream <<  "Path;Android label;Language;Type;Text\n";
+            stream << "Path" << AndroidString::CsvSeparator;
+            stream << "Android label" << AndroidString::CsvSeparator;
+            stream << "Language" << AndroidString::CsvSeparator;
+            stream << "Type" << AndroidString::CsvSeparator;
+            stream << "Text" << "\n";
             foreach (AndroidString *str, mList) {
-                stream << str->exportCSV() << "\n";
+                stream << str->exportCSV();
             }
             file.close();
         }

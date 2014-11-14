@@ -76,63 +76,76 @@ bool AndroidStringReader::readFile(QIODevice *device)
 bool AndroidStringReader::readString(AndroidString &str)
 {
     str.setType(AndroidString::TypeString);
-    return readEndToken(str, xml_string);
+    return readUntilEndToken(str, xml_string);
 }
 
 bool AndroidStringReader::readStringArray(AndroidString &str)
 {
     str.setType(AndroidString::TypeArray);
-    return readEndToken(str, xml_string_array);
+    return readUntilEndToken(str, xml_string_array);
 }
 
 bool AndroidStringReader::readQuantity(AndroidString &str)
 {
     str.setType(AndroidString::TypeQuantity);
-    return readEndToken(str, xml_plurals);
+    return readUntilEndToken(str, xml_plurals);
 }
 
 static void append(AndroidString &astr, QString &str)
 {
     str = str.simplified();
-    if ((str.size() > 0) && (str[0] == '"'))
-        str = str.mid(1, str.size() - 2);
-
     astr.appendTranslation(str);
 }
 
-bool AndroidStringReader::readEndToken(AndroidString &str, QString endToken)
+bool AndroidStringReader::readUntilEndToken(AndroidString &str, QString endToken)
 {
-    QString item;
+    QString fulltext;
     while (!atEnd() && !hasError()) {
         QXmlStreamReader::TokenType token = readNext();
         switch (token) {
             case QXmlStreamReader::Characters:
-                if (isWhitespace() == false)
-                    item.append(text().string());
+                fulltext.append(text().string());
                 break;
 
             case QXmlStreamReader::StartElement:
-                if (endToken == xml_plurals) {
-                    QString quantity = attributes().value("quantity").toString();
-                    if (quantity.size() > 0)
-                        item += quantity + ": ";
+                if (name() == "item") {
+                    if (endToken == xml_plurals) {
+                        QString quantity = attributes().value("quantity").toString();
+                        if (quantity.size() > 0)
+                            fulltext += quantity + ": ";
+                    }
+                } else if (name() == "g") {
+                    //<xliff:g id="number" example="123">%1$s</xliff:g>
+                    QString id = attributes().value("id").toString();
+                    QString example = attributes().value("example").toString();
+                    fulltext += QString("<xliff:g");
+                    if (id.size() > 0) {
+                        fulltext += QString(" id=\"%1\"").arg(id);
+                    }
+                    if (example.size() > 0) {
+                        fulltext += QString(" example=\"%1\"").arg(example);
+                    }
+                    fulltext += QString(">");
+                } else {
+                    fulltext += QString("<%1>").arg(name().toString());
                 }
-                if (name() == "g") {
-                    //This is a xliff:g
-                    item += readElementText();
-                }
-
                 break;
 
             case QXmlStreamReader::EndElement:
                 if (name() == endToken) {
-                    if (item.size() > 0) {
-                        append(str, item);
+                    if (name() == xml_string) {
+                        //Already added when find end of 'item'
+                        append(str, fulltext);
                     }
                     return true;
+                } else if (name() == "item") {
+                    append(str, fulltext);
+                    fulltext.clear();
+                } else if (name() == "g") {
+                    //<xliff:g id="number" example="123">%1$s</xliff:g>
+                    fulltext += QString("</xliff:g>");
                 } else {
-                    append(str, item);
-                    item.clear();
+                    fulltext += QString("</%1>").arg(name().toString());
                 }
                 break;
 

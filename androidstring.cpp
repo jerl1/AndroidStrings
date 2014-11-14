@@ -1,5 +1,8 @@
 #include "androidstring.h"
 
+const QChar AndroidString::CsvSeparator = ';';
+const QChar AndroidString::quote = '"';
+
 AndroidString::AndroidString(QObject *parent) :
     QObject(parent)
 {
@@ -111,25 +114,54 @@ void AndroidString::setOverided(bool overided)
 
 QString AndroidString::exportCSV()
 {
-    static const QString separator = ";";
-//    static const QChar sep = 10;
     QString csv;
-    csv += path() + separator;
-    csv += androidLabel() + separator;
-    csv += language() + separator;
-    switch (type()) {
-        case TypeString:
-            csv += QString("string") + separator;
-            break;
-        case TypeArray:
-            csv += QString("array") + separator;
-            break;
-        case TypeQuantity:
-            csv += QString("quantity") + separator;
-            break;
+
+    foreach (QString str, mTranslation) {
+        csv += path() + CsvSeparator;
+        csv += androidLabel() + CsvSeparator;
+        csv += language() + CsvSeparator;
+        switch (type()) {
+            case TypeString:
+                csv += QString("string") + CsvSeparator;
+                break;
+            case TypeArray:
+                csv += QString("array") + CsvSeparator;
+                break;
+            case TypeQuantity:
+                csv += QString("quantity") + CsvSeparator;
+                break;
+        }
+        csv += csvFormat(str);
+        csv += '\n';
     }
-//    csv += '"' + mTranslation.join(sep) + '"';
-    csv += mTranslation.join(separator);
 
     return csv;
+}
+
+QString AndroidString::csvFormat(const QString input)
+{
+    QString output = input;
+    //Should we add a '"' at the end of the line?
+    if (output.size() > 0) {
+        int look = output.indexOf(CsvSeparator);
+        if ((output.at(0) != quote) && (look >= 0)) {
+            //does not start by '"' but there is a separator inside...
+            output.prepend(quote);
+        }
+
+        if ((output.at(0) == quote) && (output.at(output.size() - 1) != quote)) {
+            output.append(('"'));
+        }
+
+        while (look > 0) {
+            if (output.at(look-1) != '\\') {
+                output.insert(look, '\\');
+                look = output.indexOf(CsvSeparator, look + 2);
+            } else {
+                look = output.indexOf(CsvSeparator, look + 1);
+            }
+        }
+    }
+
+    return output;
 }

@@ -13,6 +13,9 @@ public:
 
     static bool sort(const AndroidString *as1, const AndroidString *as2);
 
+    static const QChar CsvSeparator;
+    static const QChar quote;
+
     typedef enum _AndroidStringType {
         TypeString = 0,
         TypeArray,
@@ -48,6 +51,8 @@ private:
 
     AndroidStringType mType;
     bool mOverided;
+
+    QString csvFormat(QString input);
 };
 
 #endif // ANDROIDSTRING_H

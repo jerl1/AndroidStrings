@@ -15,7 +15,7 @@ private:
     bool readString(AndroidString &str);
     bool readStringArray(AndroidString &str);
     bool readQuantity(AndroidString &str);
-    bool readEndToken(AndroidString &str, QString endToken);
+    bool readUntilEndToken(AndroidString &str, QString endToken);
 
     QList<AndroidString*> *mList;
     QString mPath;
