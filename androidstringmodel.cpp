@@ -4,28 +4,28 @@
 
 AndroidStringItem::AndroidStringItem(const AndroidString *str, AndroidStringItem *parent)
 {
-    parentItem = parent;
+    mParentItem = parent;
     mString = str;
 }
 
 AndroidStringItem::~AndroidStringItem()
 {
-    qDeleteAll(childItems);
+    qDeleteAll(mChildItems);
 }
 
 void AndroidStringItem::appendChild(AndroidStringItem *item)
 {
-    childItems.append(item);
+    mChildItems.append(item);
 }
 
 AndroidStringItem *AndroidStringItem::child(int row)
 {
-    return childItems.value(row);
+    return mChildItems.value(row);
 }
 
 int AndroidStringItem::childCount() const
 {
-    return childItems.count();
+    return mChildItems.count();
 }
 
 int AndroidStringItem::columnCount() const
@@ -38,13 +38,13 @@ QVariant AndroidStringItem::data(int column) const
     switch (column) {
         case ColumnPath:
             //Check if we should display the path
-            if ((parentItem == NULL) || (parentItem->mString->path() != mString->path()))
+            if ((mParentItem == NULL) || (mParentItem->mString->path() != mString->path()))
                 return mString->path();
             else
                 return QString("---");
         case ColumnAndroidLabel:
-            if ((parentItem == NULL) ||
-                (parentItem->mString->androidLabel() != mString->androidLabel()))
+            if ((mParentItem == NULL) ||
+                (mParentItem->mString->androidLabel() != mString->androidLabel()))
                 return mString->androidLabel();
             else
                 return QString("---");
@@ -60,13 +60,13 @@ QVariant AndroidStringItem::data(int column) const
 
 AndroidStringItem *AndroidStringItem::parent()
 {
-    return parentItem;
+    return mParentItem;
 }
 
 int AndroidStringItem::row() const
 {
-    if (parentItem)
-        return parentItem->childItems.indexOf(const_cast<AndroidStringItem*>(this));
+    if (mParentItem)
+        return mParentItem->mChildItems.indexOf(const_cast<AndroidStringItem*>(this));
 
     return 0;
 }
@@ -76,19 +76,20 @@ int AndroidStringItem::row() const
 AndroidStringModel::AndroidStringModel(QList<AndroidString*> &list, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    AndroidString *root = new AndroidString();
-    root->setPath("Path");
-    root->setAndroidLabel("Label");
-    root->setLanguage("Language");
-    root->appendTranslation("Text");
-    rootItem = new AndroidStringItem(root);
+    mRootString = new AndroidString();
+    mRootString->setPath("Path");
+    mRootString->setAndroidLabel("Label");
+    mRootString->setLanguage("Language");
+    mRootString->appendTranslation("Text");
+    mRootItem = new AndroidStringItem(mRootString);
 
-    setupModelData(list, rootItem);
+    setupModelData(list, mRootItem);
 }
 
 AndroidStringModel::~AndroidStringModel()
 {
-    delete rootItem;
+    delete mRootString;
+    delete mRootItem;
 }
 
 int AndroidStringModel::columnCount(const QModelIndex &parent) const
@@ -96,7 +97,7 @@ int AndroidStringModel::columnCount(const QModelIndex &parent) const
     if (parent.isValid())
         return static_cast<AndroidStringItem*>(parent.internalPointer())->columnCount();
     else
-        return rootItem->columnCount();
+        return mRootItem->columnCount();
 }
 
 QVariant AndroidStringModel::data(const QModelIndex &index, int role) const
@@ -134,7 +135,7 @@ QVariant AndroidStringModel::headerData(int section, Qt::Orientation orientation
                                int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-        return rootItem->data(section);
+        return mRootItem->data(section);
 
     return QVariant();
 }
@@ -148,7 +149,7 @@ QModelIndex AndroidStringModel::index(int row, int column, const QModelIndex &pa
     AndroidStringItem *parentItem;
 
     if (!parent.isValid())
-        parentItem = rootItem;
+        parentItem = mRootItem;
     else
         parentItem = static_cast<AndroidStringItem*>(parent.internalPointer());
 
@@ -167,7 +168,7 @@ QModelIndex AndroidStringModel::parent(const QModelIndex &index) const
     AndroidStringItem *childItem = static_cast<AndroidStringItem*>(index.internalPointer());
     AndroidStringItem *parentItem = childItem->parent();
 
-    if (parentItem == rootItem)
+    if (parentItem == mRootItem)
         return QModelIndex();
 
     return createIndex(parentItem->row(), 0, parentItem);
@@ -180,7 +181,7 @@ int AndroidStringModel::rowCount(const QModelIndex &parent) const
         return 0;
 
     if (!parent.isValid())
-        parentItem = rootItem;
+        parentItem = mRootItem;
     else
         parentItem = static_cast<AndroidStringItem*>(parent.internalPointer());
 

@@ -34,8 +34,8 @@ class AndroidStringItem
 
     private:
         const AndroidString *mString;
-        QList<AndroidStringItem*> childItems;
-        AndroidStringItem *parentItem;
+        QList<AndroidStringItem*> mChildItems;
+        AndroidStringItem *mParentItem;
 };
 
 class AndroidStringModel : public QAbstractItemModel
@@ -57,7 +57,8 @@ class AndroidStringModel : public QAbstractItemModel
     private:
         void setupModelData(QList<AndroidString*> &list, AndroidStringItem *parent);
 
-        AndroidStringItem *rootItem;
+        AndroidStringItem *mRootItem;
+        AndroidString *mRootString;
 };
 
 #endif // ANDROIDSTRINGMODEL_H
