@@ -90,16 +90,21 @@ void AndroidString::setType(const AndroidStringType &type)
 
 bool AndroidString::sort(const AndroidString *as1, const AndroidString *as2)
 {
+    return AndroidString::compare(as1, as2) < 0;
+}
+
+int AndroidString::compare(const AndroidString *as1, const AndroidString *as2)
+{
     //Check path
-    int resultInt = as1->path().compare(as2->path(), Qt::CaseSensitive);
+    int resultInt = as1->mPath.compare(as2->mPath, Qt::CaseSensitive);
     if (resultInt == 0) {
         //Check label
-        resultInt = as1->androidLabel().compare(as2->androidLabel(), Qt::CaseInsensitive);
+        resultInt = as1->mAndroidLabel.compare(as2->mAndroidLabel, Qt::CaseInsensitive);
         if (resultInt == 0) {
-            resultInt = as1->language().compare(as2->language(), Qt::CaseSensitive);
+            resultInt = as1->mLanguage.compare(as2->mLanguage, Qt::CaseSensitive);
         }
     }
-    return resultInt < 0;
+    return resultInt;
 }
 
 QString AndroidString::exportCSV()

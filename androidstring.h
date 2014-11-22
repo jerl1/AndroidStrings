@@ -12,6 +12,7 @@ public:
     explicit AndroidString(const AndroidString *str, QObject *parent = 0);
 
     static bool sort(const AndroidString *as1, const AndroidString *as2);
+    static int compare(const AndroidString *as1, const AndroidString *as2);
 
     static const QChar CsvSeparator;
     static const QChar quote;

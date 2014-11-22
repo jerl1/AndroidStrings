@@ -136,9 +136,7 @@ bool MainWindow::overloadList()
 
     foreach (AndroidString *overStr, overloadedList) {
         foreach (AndroidString *sourceStr, mList) {
-            if ((overStr->path() == sourceStr->path()) &&
-                (overStr->androidLabel() == sourceStr->androidLabel()) &&
-                (overStr->language() == sourceStr->language())) {
+            if (AndroidString::compare(overStr, sourceStr) == 0) {
                 overStr->setStatus(AndroidString::TypeOverided);
                 nb_overided += mList.removeAll(sourceStr);
                 mList.append(overStr);
@@ -220,7 +218,7 @@ void MainWindow::handleResults(const bool &aborted)
 {
     if (aborted == false) {
         //Sort result
-        qSort(mList.begin(), mList.end(), AndroidString::sort);
+        std::sort(mList.begin(), mList.end(), AndroidString::sort);
         mProcess->setStep(3);
 
         updateTreeWidget();
