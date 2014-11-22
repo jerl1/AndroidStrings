@@ -22,6 +22,12 @@ public:
         TypeQuantity
     } AndroidStringType;
 
+    typedef enum _AndroidStringStatus {
+        TypeNew = 0,
+        TypeOverided,
+        TypeOverlayNew
+    } AndroidStringStatus;
+
     QString path() const;
     void setPath(const QString &path);
 
@@ -39,9 +45,10 @@ public:
     AndroidStringType type() const;
     void setType(const AndroidStringType &type);
 
-    bool overided() const;
-    void setOverided(bool overided);
     QString exportCSV();
+
+    AndroidStringStatus status() const;
+    void setStatus(const AndroidStringStatus &status);
 
 private:
     QString mPath;
@@ -50,7 +57,7 @@ private:
     QStringList mTranslation;
 
     AndroidStringType mType;
-    bool mOverided;
+    AndroidStringStatus mStatus;
 
     QString csvFormat(QString input);
 };

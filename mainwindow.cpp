@@ -120,19 +120,30 @@ void MainWindow::overloadList()
     //Now retrieved all that have been overloaded
     QList<AndroidString*> overloadedList;
     updateList(&overloadedList, ui->overlayLine);
+    int nb_overided = 0, nb_overlay = 0;
 
     foreach (AndroidString *overStr, overloadedList) {
         foreach (AndroidString *sourceStr, mList) {
             if ((overStr->path() == sourceStr->path()) &&
                 (overStr->androidLabel() == sourceStr->androidLabel()) &&
                 (overStr->language() == sourceStr->language())) {
-                overStr->setOverided(true);
-                mList.removeAll(sourceStr);
+                overStr->setStatus(AndroidString::TypeOverided);
+                nb_overided += mList.removeAll(sourceStr);
                 mList.append(overStr);
+                overloadedList.removeOne(overStr);
                 break;
             }
         }
     }
+    qDebug(qPrintable(QString("Number of overided: %1").arg(nb_overided)));
+
+    foreach (AndroidString *overStr, overloadedList) {
+        overStr->setStatus(AndroidString::TypeOverlayNew);
+        nb_overlay += 1;
+        mList.append(overStr);
+        overloadedList.removeOne(overStr);
+    }
+    qDebug(qPrintable(QString("Number of overlay added: %1").arg(nb_overlay)));
 }
 
 void MainWindow::on_parseButton_clicked()

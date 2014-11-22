@@ -52,8 +52,8 @@ QVariant AndroidStringItem::data(int column) const
             return mString->language();
         case ColumnTranslation:
             return mString->formatedTranslation();
-        case ColumnOverided:
-            return mString->overided();
+        case ColumnStatus:
+            return mString->status();
     }
     return QVariant();
 }
@@ -106,15 +106,20 @@ QVariant AndroidStringModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     if (role == Qt::ForegroundRole) {
-        if (item->data(AndroidStringItem::ColumnOverided).toBool())
-            return QVariant(QColor(Qt::blue));
-        else
-            return QVariant(QColor(Qt::black));
+        switch (item->data(AndroidStringItem::ColumnStatus).toInt())
+        {
+            case AndroidString::TypeOverided:
+                return QVariant(QColor(Qt::blue));
+            case AndroidString::TypeNew:
+                return QVariant(QColor(Qt::black));
+            case AndroidString::TypeOverlayNew:
+                return QVariant(QColor(Qt::red));
+        }
     } else if (role == Qt::DisplayRole) {
         return item->data(index.column());
-    } else {
-        return QVariant();
     }
+
+    return QVariant();
 }
 
 Qt::ItemFlags AndroidStringModel::flags(const QModelIndex &index) const

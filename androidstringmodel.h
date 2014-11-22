@@ -29,7 +29,7 @@ class AndroidStringItem
             ColumnTranslation,
             ColumnCount, //Last displayed column
             ColumnType,
-            ColumnOverided
+            ColumnStatus
         } columnDefinition;
 
     private:
