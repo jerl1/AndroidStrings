@@ -152,7 +152,7 @@ bool MainWindow::overloadList()
             }
         }
     }
-    qDebug(qPrintable(QString("Number of overided: %1").arg(nb_overided)));
+    qDebug(qPrintable(QString("Number of translation overided: %1").arg(nb_overided)));
 
     foreach (AndroidString *overStr, overloadedList) {
         if (mProcess->abort()) {
@@ -164,7 +164,7 @@ bool MainWindow::overloadList()
         mList.append(overStr);
         overloadedList.removeOne(overStr);
     }
-    qDebug(qPrintable(QString("Number of overlay added: %1").arg(nb_overlay)));
+    qDebug(qPrintable(QString("Number of translation overlay added: %1").arg(nb_overlay)));
 
     //In case of an abort there is some datas allocated
     qDeleteAll(overloadedList);
@@ -230,6 +230,8 @@ void MainWindow::handleResults(const bool &aborted)
         while (!mList.isEmpty())
             delete mList.takeFirst();
     }
+
+    qDebug(qPrintable(QString("Number of translation: %1").arg(mList.size())));
 
     delete mProcess;
 }
