@@ -8,6 +8,7 @@
 
 #include "androidstring.h"
 #include "androidstringmodel.h"
+#include "processingdialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,7 +22,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    int parserRun();
+    bool parserRun();
 
 private slots:
     void on_parseButton_clicked();
@@ -30,7 +31,7 @@ private slots:
     void on_overlayButton_clicked();
     void on_exportButton_clicked();
 
-    void handleResults(const int &result);
+    void handleResults(const bool &aborted);
 
 private:
     Ui::MainWindow *ui;
@@ -38,13 +39,13 @@ private:
     void selectDirectory(QLineEdit *line);
     void updateTreeWidget();
     QDirIterator *newDirIterator(QDir &source);
-    void updateList(QList<AndroidString*> *list,
+    bool updateList(QList<AndroidString*> *list,
                     QLineEdit *source, QLineEdit *exclude = NULL);
-    void overloadList();
-    void updateUI(const bool enable);
+    bool overloadList();
 
     QList<AndroidString*> mList;
     AndroidStringModel *mModel;
+    ProcessingDialog *mProcess;
 };
 
 class ParseThread : public QThread

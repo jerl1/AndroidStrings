@@ -76,11 +76,13 @@ void MainWindow::on_overlayButton_clicked()
     selectDirectory(ui->overlayLine);
 }
 
-void MainWindow::updateList(QList<AndroidString*> *list,
+bool MainWindow::updateList(QList<AndroidString*> *list,
                             QLineEdit *source, QLineEdit *exclude)
 {
+    bool aborted = false;
+
     if ((source == NULL) || (source->text().size() <= 0))
-        return;
+        return aborted;
 
     QDir sourceDir;
     sourceDir = QDir(source->text());
@@ -111,12 +113,22 @@ void MainWindow::updateList(QList<AndroidString*> *list,
         } else {
             //qDebug(qPrintable(QString("Parsing OK: ") + QFileInfo(file).absoluteFilePath()));
         }
+
+        if (mProcess->abort()) {
+            aborted = true;
+            break;
+        }
     }
+
     delete sourcesIterator;
+
+    return aborted;
 }
 
-void MainWindow::overloadList()
+bool MainWindow::overloadList()
 {
+    bool aborted = false;
+
     //Now retrieved all that have been overloaded
     QList<AndroidString*> overloadedList;
     updateList(&overloadedList, ui->overlayLine);
@@ -133,17 +145,31 @@ void MainWindow::overloadList()
                 overloadedList.removeOne(overStr);
                 break;
             }
+
+            if (mProcess->abort()) {
+                aborted = true;
+                break;
+            }
         }
     }
     qDebug(qPrintable(QString("Number of overided: %1").arg(nb_overided)));
 
     foreach (AndroidString *overStr, overloadedList) {
+        if (mProcess->abort()) {
+            aborted = true;
+            break;
+        }
         overStr->setStatus(AndroidString::TypeOverlayNew);
         nb_overlay += 1;
         mList.append(overStr);
         overloadedList.removeOne(overStr);
     }
     qDebug(qPrintable(QString("Number of overlay added: %1").arg(nb_overlay)));
+
+    //In case of an abort there is some datas allocated
+    qDeleteAll(overloadedList);
+
+    return aborted;
 }
 
 void MainWindow::on_parseButton_clicked()
@@ -151,7 +177,9 @@ void MainWindow::on_parseButton_clicked()
     //Create a fake list just for the updating process
     QList<AndroidString*> tmpList;
 
-    updateUI(false);
+    mProcess = new ProcessingDialog(this);
+    mProcess->show();
+
     AndroidStringModel *tmpModel = mModel;
     mModel = new AndroidStringModel(tmpList);
     ui->treeView->setModel(mModel);
@@ -188,32 +216,35 @@ void MainWindow::on_exportButton_clicked()
     }
 }
 
-void MainWindow::handleResults(const int &result)
+void MainWindow::handleResults(const bool &aborted)
 {
-    if (result > 0) {
+    if (aborted == false) {
         //Sort result
         qSort(mList.begin(), mList.end(), AndroidString::sort);
+        mProcess->setStep(3);
 
         updateTreeWidget();
+        mProcess->setStep(4);
+    } else {
+        //Clear the list of translation
+        while (!mList.isEmpty())
+            delete mList.takeFirst();
     }
-    updateUI(true);
+
+    delete mProcess;
 }
 
-int MainWindow::parserRun()
+bool MainWindow::parserRun()
 {
-    updateList(&mList, ui->sourceLine, ui->excludeLine);
-    overloadList();
+    bool aborted = updateList(&mList, ui->sourceLine, ui->excludeLine);
+    mProcess->setStep(1);
 
-    return 1;
-}
+    if (aborted == false) {
+        overloadList();
+        mProcess->setStep(2);
+    }
 
-void MainWindow::updateUI(const bool enable)
-{
-    ui->sourceButton->setEnabled(enable);
-    ui->excludeButton->setEnabled(enable);
-    ui->overlayButton->setEnabled(enable);
-    ui->parseButton->setEnabled(enable);
-    ui->exportButton->setEnabled(enable);
+    return aborted;
 }
 
 //------------------------------------------------

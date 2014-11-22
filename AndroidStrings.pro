@@ -16,11 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     androidstring.cpp \
     androidstringreader.cpp \
-    androidstringmodel.cpp
+    androidstringmodel.cpp \
+    processingdialog.cpp
 
 HEADERS  += mainwindow.h \
     androidstring.h \
     androidstringreader.h \
-    androidstringmodel.h
+    androidstringmodel.h \
+    processingdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    processingdialog.ui
