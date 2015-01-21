@@ -188,8 +188,10 @@ void MainWindow::on_parseButton_clicked()
         delete mList.takeFirst();
 
     ParseThread *workerThread = new ParseThread(this);
-    connect(workerThread, &ParseThread::resultReady, this, &MainWindow::handleResults);
-    connect(workerThread, &ParseThread::finished, workerThread, &QObject::deleteLater);
+    connect(workerThread, SIGNAL(ParseThread::resultReady(const int&)),
+            this, SLOT(MainWindow::handleResults(const bool&)));
+    connect(workerThread, SIGNAL(ParseThread::finished),
+            workerThread, SLOT(QObject::deleteLater));
     workerThread->start();
 }
 
