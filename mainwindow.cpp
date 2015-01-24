@@ -150,7 +150,7 @@ bool MainWindow::overloadList()
             }
         }
     }
-    qDebug(qPrintable(QString("Number of translation overided: %1").arg(nb_overided)));
+    qDebug(qPrintable(QString("Number of translation overrided: %1").arg(nb_overided)));
 
     foreach (AndroidString *overStr, overloadedList) {
         if (mProcess->abort()) {
@@ -188,10 +188,10 @@ void MainWindow::on_parseButton_clicked()
         delete mList.takeFirst();
 
     ParseThread *workerThread = new ParseThread(this);
-    connect(workerThread, SIGNAL(ParseThread::resultReady(const int&)),
-            this, SLOT(MainWindow::handleResults(const bool&)));
-    connect(workerThread, SIGNAL(ParseThread::finished),
-            workerThread, SLOT(QObject::deleteLater));
+    connect(workerThread, SIGNAL(resultReady(const bool&)),
+            this, SLOT(handleResults(const bool&)));
+    connect(workerThread, SIGNAL(finished()),
+            workerThread, SLOT(deleteLater()));
     workerThread->start();
 }
 
@@ -259,6 +259,6 @@ ParseThread::ParseThread(MainWindow *win) :
 
 void ParseThread::run()
 {
-    int result = mMainWindow->parserRun();
+    bool result = mMainWindow->parserRun();
     emit resultReady(result);
 }

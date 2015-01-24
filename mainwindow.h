@@ -60,7 +60,7 @@ private:
     MainWindow *mMainWindow;
 
 signals:
-    void resultReady(const int &result);
+    void resultReady(const bool &result);
 };
 
 #endif // MAINWINDOW_H
